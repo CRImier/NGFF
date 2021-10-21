@@ -227,63 +227,43 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
 
         KeyArcAngle = 1800 # decidegrees
 
+        # small inline function for notch drawing
+        def draw_key(KeyCenter):
+            leftX = centerX + KeyCenter - keyDiameter / 2.0
+            rightX = leftX + keyDiameter
+            topY = centerY - keyHeight + keyDiameter / 2.0
+            # left line
+            draw.Line(leftX, centerY, leftX, topY)
+            # right line
+            draw.Line(rightX, centerY, rightX, topY)
+            # arc
+            self.Arc(KeyCenter, topY, leftX, topY, KeyArcAngle)
+
+        # keys go from left to right and it's more comfortable to preserve this order
+        # so, leftmost (second) key first
+
         if self.secondKey():
-            V = pcbnew.FromMM(self.secondKey()["KeyCenter"])
+            KeyCenter = pcbnew.FromMM(self.secondKey()["KeyCenter"])
+            draw_key(KeyCenter)
 
-            secondKeyBottomLeftX = centerX + V - keyDiameter / 2.0
-            secondKeyBottomLeftY = centerY
-
-            secondKeyTopLeftX = secondKeyBottomLeftX
-            secondKeyTopLeftY = secondKeyBottomLeftY - keyHeight + keyDiameter / 2.0
-
-            draw.Line(secondKeyBottomLeftX, secondKeyBottomLeftY, secondKeyTopLeftX, secondKeyTopLeftY)
-
-            secondKeyCenterX = secondKeyTopLeftX + keyDiameter / 2.0
-            secondKeyCenterY = secondKeyTopLeftY
-
-            self.Arc(secondKeyCenterX, secondKeyCenterY, secondKeyTopLeftX, secondKeyTopLeftY, KeyArcAngle)
-
-            secondKeyTopRightX = secondKeyTopLeftX + keyDiameter
-            secondKeyTopRightY = secondKeyTopLeftY
-
-            secondKeyBottomRightX = secondKeyTopRightX
-            secondKeyBottomRightY = centerY
-
-            draw.Line(secondKeyTopRightX, secondKeyTopRightY, secondKeyBottomRightX, secondKeyBottomRightY)
+            secondKeyBottomLeftX = centerX + KeyCenter - keyDiameter / 2.0
+            secondKeyBottomRightX = secondKeyBottomLeftX + keyDiameter
 
             bottomEndpoints += [secondKeyBottomLeftX, secondKeyBottomRightX]
 
-        # TODO: Implement the second key.
-        # wait what? it's already implemented
+        # first key
+
+        if self.firstKey():
+            KeyCenter = pcbnew.FromMM(self.firstKey()["KeyCenter"])
+            draw_key(KeyCenter)
+
+            firstKeyBottomLeftX = centerX + KeyCenter - keyDiameter / 2.0
+            firstKeyBottomRightX = firstKeyBottomLeftX + keyDiameter
+
+            bottomEndpoints += [firstKeyBottomLeftX, firstKeyBottomRightX]
 
         bottomRightX = connectorTongueWidth / 2.0
         bottomRightY = centerY
-
-        if self.firstKey():
-            Q = pcbnew.FromMM(self.firstKey()["KeyCenter"])
-
-            firstKeyBottomLeftX = centerX + Q - keyDiameter / 2.0
-            firstKeyBottomLeftY = centerY
-
-            firstKeyTopLeftX = firstKeyBottomLeftX
-            firstKeyTopLeftY = firstKeyBottomLeftY - keyHeight + keyDiameter / 2.0
-
-            draw.Line(firstKeyBottomLeftX, firstKeyBottomLeftY, firstKeyTopLeftX, firstKeyTopLeftY)
-
-            firstKeyCenterX = firstKeyTopLeftX + keyDiameter / 2.0
-            firstKeyCenterY = firstKeyTopLeftY
-
-            self.Arc(firstKeyCenterX, firstKeyCenterY, firstKeyTopLeftX, firstKeyTopLeftY, KeyArcAngle)
-
-            firstKeyTopRightX = firstKeyTopLeftX + keyDiameter
-            firstKeyTopRightY = firstKeyTopLeftY
-
-            firstKeyBottomRightX = firstKeyTopRightX
-            firstKeyBottomRightY = centerY
-
-            draw.Line(firstKeyTopRightX, firstKeyTopRightY, firstKeyBottomRightX, firstKeyBottomRightY)
-
-            bottomEndpoints += [firstKeyBottomLeftX, firstKeyBottomRightX]
 
         topRightArcStartX = bottomRightX
         topRightArcStartY = bottomRightY - connectorHeight + connectorBaseArcRadius
