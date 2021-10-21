@@ -242,25 +242,15 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
         # keys go from left to right and it's more comfortable to preserve this order
         # so, leftmost (second) key first
 
-        if self.secondKey():
-            KeyCenter = pcbnew.FromMM(self.secondKey()["KeyCenter"])
-            draw_key(KeyCenter)
+        for key in [self.secondKey(), self.firstKey()]:
+            if key:
+                KeyCenter = pcbnew.FromMM(key["KeyCenter"])
+                draw_key(KeyCenter)
 
-            secondKeyBottomLeftX = centerX + KeyCenter - keyDiameter / 2.0
-            secondKeyBottomRightX = secondKeyBottomLeftX + keyDiameter
+                leftX = centerX + KeyCenter - keyDiameter / 2.0
+                rightX = leftX + keyDiameter
 
-            bottomEndpoints += [secondKeyBottomLeftX, secondKeyBottomRightX]
-
-        # first key
-
-        if self.firstKey():
-            KeyCenter = pcbnew.FromMM(self.firstKey()["KeyCenter"])
-            draw_key(KeyCenter)
-
-            firstKeyBottomLeftX = centerX + KeyCenter - keyDiameter / 2.0
-            firstKeyBottomRightX = firstKeyBottomLeftX + keyDiameter
-
-            bottomEndpoints += [firstKeyBottomLeftX, firstKeyBottomRightX]
+                bottomEndpoints += [leftX, rightX]
 
         bottomRightX = connectorTongueWidth / 2.0
         bottomRightY = centerY
