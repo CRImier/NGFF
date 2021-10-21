@@ -162,10 +162,11 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
 
         # if second key is "earlier" than the first key, swap them
         # otherwise, there's some funky stuff happening?
-        if ord(first.value) > ord(second.value):
-            f, s = first.value, second.value
-            second.SetValue(f)
-            first.SetValue(s)
+        if first.value and second.value:
+            if ord(first.value) > ord(second.value):
+                f, s = first.value, second.value
+                second.SetValue(f)
+                first.SetValue(s)
 
     def FilledBox(self, x1, y1, x2, y2):
         box = pcbnew.EDGE_MODULE(self.module)
