@@ -3,43 +3,29 @@ import pcbnew
 import FootprintWizardBase
 
 # Dimensions from PCIe M.2 Specification rev 1.0 §2.3.5.2.
-keyingFirst = {
+keying = {
     "A": {
-        "Q": 6.625,
-        "R": 1.50,
-        "S": 14.50,
-        "T": 1.00,
-        "U": 14.50,
+        "KeyCenter": 6.625,  # Distance from the center of the footprint to the center of the key
         "PinMin": 8,
         "PinMax": 15,
     },
     "B": {
-        "Q": 5.625,
-        "R": 2.50,
-        "S": 13.50,
-        "T": 2.00,
-        "U": 13.50,
+        "KeyCenter": 5.625,
         "PinMin": 12,
         "PinMax": 19,
     },
     "E": {
-        "Q": 2.625,
-        "R": 5.50,
-        "S": 10.50,
-        "T": 5.00,
-        "U": 10.50,
+        "KeyCenter": 2.625,
         "PinMin": 24,
         "PinMax": 31,
     },
-}
-
-keyingSecond = {
+    "G": {
+        "KeyCenter": -1.125,
+        "PinMin": 39,
+        "PinMax": 46,
+    },
     "M": {
-        "V": 6.125,
-        "W": 14.00,
-        "X": 2.50,
-        "Y": 1.00,
-        "Z": 14.50,
+        "KeyCenter": -6.125,
         "PinMin": 59,
         "PinMax": 66,
     },
@@ -93,11 +79,11 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
 
     def firstKey(self):
         first = self.GetParam("Keying", "First").value
-        return keyingFirst.get(first, None)
+        return keying.get(first, None)
 
     def secondKey(self):
         second = self.GetParam("Keying", "Second").value
-        return keyingSecond.get(second, None)
+        return keying.get(second, None)
 
     def omitPin(self, number):
         firstKey = self.firstKey()
@@ -166,13 +152,20 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
     def CheckParameters(self):
         first = self.GetParam("Keying", "First")
         second = self.GetParam("Keying", "Second")
-        if first.value and first.value not in keyingFirst:
-            msg = "Unknown first keying: %s (supported: %s)" % (first, ", ".join(sorted(keyingFirst.keys())))
+        if first.value and first.value not in keying:
+            msg = "Unknown first keying: %s (supported: %s)" % (first, ", ".join(sorted(keying.keys())))
             first.AddError(msg)
 
-        if second.value and second.value not in keyingSecond:
-            msg = "Unknown second keying: %s (supported: %s)" % (second, ", ".join(sorted(keyingSecond.keys())))
+        if second.value and second.value not in keying:
+            msg = "Unknown second keying: %s (supported: %s)" % (second, ", ".join(sorted(keying.keys())))
             second.AddError(msg)
+
+        # if second key is "earlier" than the first key, swap them
+        # otherwise, there's some funky stuff happening?
+        if ord(first.value) > ord(second.value):
+            f, s = first.value, second.value
+            second.SetValue(f)
+            first.SetValue(s)
 
     def FilledBox(self, x1, y1, x2, y2):
         box = pcbnew.EDGE_MODULE(self.module)
@@ -190,7 +183,7 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
     def drawSolderMaskOpening(self, x1, x2, height, layer):
         rectCenterX = pcbnew.FromMM(0.0)
         rectCenterY = -height / 2.0
-        
+
         box = self.FilledBox(x1, pcbnew.FromMM(0.0), x2, -height)
         box.SetLayer(layer)
         self.draw.module.Add(box)
@@ -232,10 +225,9 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
         draw.Line(topLeftArcEndX, topLeftArcEndY, bottomLeftX, bottomLeftY)
 
         if self.secondKey():
-            # Distance from the center of the footprint to the center of the key
-            V = pcbnew.FromMM(self.secondKey()["V"])
+            V = pcbnew.FromMM(self.secondKey()["KeyCenter"])
 
-            secondKeyBottomLeftX = centerX - V - keyDiameter / 2.0
+            secondKeyBottomLeftX = centerX + V - keyDiameter / 2.0
             secondKeyBottomLeftY = centerY
 
             draw.Line(bottomLeftX, bottomLeftY, secondKeyBottomLeftX, secondKeyBottomLeftY)
@@ -265,17 +257,17 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
             draw.Line(bottomLeftX, bottomLeftY, centerX, centerY)
 
         # TODO: Implement the second key.
+        # wait what? it's already implemented
 
         bottomRightX = connectorTongueWidth / 2.0
         bottomRightY = centerY
 
         if self.firstKey():
-            # Distance from the center of the footprint to the center of the key
-            Q = pcbnew.FromMM(self.firstKey()["Q"])
+            Q = pcbnew.FromMM(self.firstKey()["KeyCenter"])
 
             firstKeyBottomLeftX = centerX + Q - keyDiameter / 2.0
             firstKeyBottomLeftY = centerY
-            
+
             draw.Line(centerX, centerY, firstKeyBottomLeftX, firstKeyBottomLeftY)
 
             firstKeyTopLeftX = firstKeyBottomLeftX
