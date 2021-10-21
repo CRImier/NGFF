@@ -224,13 +224,13 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
 
         draw.Line(topLeftArcEndX, topLeftArcEndY, bottomLeftX, bottomLeftY)
 
+        KeyArcAngle = 1800 # decidegrees
+
         if self.secondKey():
             V = pcbnew.FromMM(self.secondKey()["KeyCenter"])
 
             secondKeyBottomLeftX = centerX + V - keyDiameter / 2.0
             secondKeyBottomLeftY = centerY
-
-            draw.Line(bottomLeftX, bottomLeftY, secondKeyBottomLeftX, secondKeyBottomLeftY)
 
             secondKeyTopLeftX = secondKeyBottomLeftX
             secondKeyTopLeftY = secondKeyBottomLeftY - keyHeight + keyDiameter / 2.0
@@ -239,9 +239,8 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
 
             secondKeyCenterX = secondKeyTopLeftX + keyDiameter / 2.0
             secondKeyCenterY = secondKeyTopLeftY
-            secondKeyArcAngle = 1800 # decidegrees
 
-            self.Arc(secondKeyCenterX, secondKeyCenterY, secondKeyTopLeftX, secondKeyTopLeftY, secondKeyArcAngle)
+            self.Arc(secondKeyCenterX, secondKeyCenterY, secondKeyTopLeftX, secondKeyTopLeftY, KeyArcAngle)
 
             secondKeyTopRightX = secondKeyTopLeftX + keyDiameter
             secondKeyTopRightY = secondKeyTopLeftY
@@ -250,11 +249,8 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
             secondKeyBottomRightY = centerY
 
             draw.Line(secondKeyTopRightX, secondKeyTopRightY, secondKeyBottomRightX, secondKeyBottomRightY)
-            draw.Line(secondKeyBottomRightX, secondKeyBottomRightY, centerX, centerY)
 
             bottomEndpoints += [secondKeyBottomLeftX, secondKeyBottomRightX]
-        else:
-            draw.Line(bottomLeftX, bottomLeftY, centerX, centerY)
 
         # TODO: Implement the second key.
         # wait what? it's already implemented
@@ -268,8 +264,6 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
             firstKeyBottomLeftX = centerX + Q - keyDiameter / 2.0
             firstKeyBottomLeftY = centerY
 
-            draw.Line(centerX, centerY, firstKeyBottomLeftX, firstKeyBottomLeftY)
-
             firstKeyTopLeftX = firstKeyBottomLeftX
             firstKeyTopLeftY = firstKeyBottomLeftY - keyHeight + keyDiameter / 2.0
 
@@ -277,9 +271,8 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
 
             firstKeyCenterX = firstKeyTopLeftX + keyDiameter / 2.0
             firstKeyCenterY = firstKeyTopLeftY
-            firstKeyArcAngle = 1800 # decidegrees
 
-            self.Arc(firstKeyCenterX, firstKeyCenterY, firstKeyTopLeftX, firstKeyTopLeftY, firstKeyArcAngle)
+            self.Arc(firstKeyCenterX, firstKeyCenterY, firstKeyTopLeftX, firstKeyTopLeftY, KeyArcAngle)
 
             firstKeyTopRightX = firstKeyTopLeftX + keyDiameter
             firstKeyTopRightY = firstKeyTopLeftY
@@ -288,11 +281,8 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
             firstKeyBottomRightY = centerY
 
             draw.Line(firstKeyTopRightX, firstKeyTopRightY, firstKeyBottomRightX, firstKeyBottomRightY)
-            draw.Line(firstKeyBottomRightX, firstKeyBottomRightY, bottomRightX, bottomRightY)
 
             bottomEndpoints += [firstKeyBottomLeftX, firstKeyBottomRightX]
-        else:
-            draw.Line(centerX, centerY, bottomRightX, bottomRightY)
 
         topRightArcStartX = bottomRightX
         topRightArcStartY = bottomRightY - connectorHeight + connectorBaseArcRadius
@@ -318,6 +308,7 @@ class NGFF_FootprintWizard(FootprintWizardBase.FootprintWizard):
         for endpoints in zip(bottomEndpoints[0::2], bottomEndpoints[1::2]):
             self.drawSolderMaskOpening(endpoints[0], endpoints[1], topPadHeight, pcbnew.F_Mask)
             self.drawSolderMaskOpening(endpoints[0], endpoints[1], bottomPadHeight, pcbnew.B_Mask)
+            draw.Line(endpoints[0], centerY, endpoints[1], centerY) # drawing the bottom lines
 
         for padNumber in range(1, 76):
             pad = self.createPad(padNumber, str(padNumber))
