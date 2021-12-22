@@ -1,9 +1,9 @@
 #!/usr/bin/make
 DEBUG=
 MAK=kibot.mak
-CONFIG=usb3-ngff-carrier.kibot.yaml
-SCH=usb3-ngff-carrier.sch
-PCB=usb3-ngff-carrier.kicad_pcb
+CONFIG=ngff.kibot.yaml
+SCH=ngff.sch
+PCB=ngff.kicad_pcb
 DEST=Fabrication
 
 all: erc_and_fab drc_and_fab

@@ -5,7 +5,7 @@
   (lib (name LD1085D2T33R)(type Legacy)(uri ${KIPRJMOD}/symbol/LD1085D2T33R.lib)(options "")(descr ""))
   (lib (name TPS82130SILR)(type Legacy)(uri ${KIPRJMOD}/symbol/TPS82130SILR.lib)(options "")(descr ""))
   (lib (name SIM8060-6-1-14-00-A)(type Legacy)(uri ${KIPRJMOD}/symbol/SIM8060-6-1-14-00-A.lib)(options "")(descr ""))
-  (lib (name usb3-ngff-carrier-rescue)(type Legacy)(uri ${KIPRJMOD}/usb3-ngff-carrier-rescue.lib)(options "")(descr ""))
+  (lib (name ngff-rescue)(type Legacy)(uri ${KIPRJMOD}/ngff-rescue.lib)(options "")(descr ""))
   (lib (name KMR221GLFS)(type Legacy)(uri ${KIPRJMOD}/symbol/KMR221GLFS.lib)(options "")(descr ""))
   (lib (name "Wurth-693043020611 ")(type Legacy)(uri "${KIPRJMOD}/symbol/Wurth-693043020611 .lib")(options "")(descr ""))
 )

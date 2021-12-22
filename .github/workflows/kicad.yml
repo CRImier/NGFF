@@ -26,13 +26,13 @@ jobs:
     - uses: sto-pi/KiBot@v1
       with:
         # Required - kibot config file
-        config: project/usb3-ngff-carrier.kibot.yaml
+        config: project/ngff.kibot.yaml
         # optional - prefix to output defined in config
         dir: project/Fabrication
         # optional - schematic file
-        schema: 'project/usb3-ngff-carrier.sch'
+        schema: 'project/ngff.sch'
         # optional - PCB design file
-        board: 'project/usb3-ngff-carrier.kicad_pcb'
+        board: 'project/ngff.kicad_pcb'
     - name: Retrieve results
       if: ${{ always() }}
       uses: actions/upload-artifact@v2
