@@ -1569,7 +1569,7 @@ F 8 "Mouser" H 4000 6550 50  0001 C CNN "Vendor"
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Power_Management:AP62301WU7 U1
+L ngff-rescue:AP62301WU7-Power_Management U1
 U 1 1 609318E9
 P 3350 6650
 F 0 "U1" H 3350 7017 50  0000 C CNN
