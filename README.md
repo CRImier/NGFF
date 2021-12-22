@@ -1,6 +1,6 @@
 ﻿# [NGFF](https://github.com/sto-pi/NGFF)
 
-[![sites](http://182.61.61.133/link/resources/Qful.png)](https://www.stops.top)
+[![sites](http://182.61.61.133/link/resources/OSQ.png)](https://www.stops.top)
 
 [![Build Status](https://github.com/sto-pi/NGFF/workflows/kicad/badge.svg)](https://github.com/sto-pi/NGFF/actions/workflows/kicad.yml)
 
