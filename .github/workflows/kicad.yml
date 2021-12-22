@@ -1,0 +1,44 @@
+name: kicad
+
+
+on:
+  push:
+    paths:
+      - 'project/*.sch'
+      - 'project/*.kicad_pcb'
+      - 'project/*.kibot.yaml'
+      - 'project/Makefile'
+      - '.github/workflows/kicad.yml'
+  pull_request:
+    paths:
+      - 'project/*.sch'
+      - 'project/*.kicad_pcb'
+      - 'project/*.kibot.yaml'
+      - 'project/Makefile'
+      - '.github/workflows/kicad.yml'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  Fabrication:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: sto-pi/KiBot@v1
+      with:
+        # Required - kibot config file
+        config: project/usb3-ngff-carrier.kibot.yaml
+        # optional - prefix to output defined in config
+        dir: project/Fabrication
+        # optional - schematic file
+        schema: 'project/usb3-ngff-carrier.sch'
+        # optional - PCB design file
+        board: 'project/usb3-ngff-carrier.kicad_pcb'
+    - name: Retrieve results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: TemplateFabrication
+        path: |
+          project/Fabrication/
+        if-no-files-found: warn
+
