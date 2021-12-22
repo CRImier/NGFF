@@ -2,6 +2,9 @@
 
 [![sites](http://182.61.61.133/link/resources/Qful.png)](https://www.stops.top)
 
+[![Build Status](https://github.com/sto-pi/NGFF/workflows/kicad/badge.svg)](https://github.com/sto-pi/NGFF/actions/workflows/kicad.yml)
+
+
 ### [NGFF简介](https://github.com/sto-pi/NGFF)
 
 [NGFF](https://github.com/sto-pi/NGFF) (Next Generation Form Factor)，与 NGFF 并列的是 2.5"（2.5”硬盘（包括HDD和SSD）厚度一般为9.5mm和7mm），NGFF现在已经改名为M.2，M.2有SATA 和PCIe两种总线标准。
