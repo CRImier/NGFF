@@ -1,0 +1,302 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  run_erc: true
+  run_drc: true
+  check_zone_fills: false
+  ignore_unconnected: false
+
+global:
+  # We want the revision added to the names for this project
+  output: '%f-%i_%r.%x'
+
+import:
+  - ../configs/Elecrow.kibot.yaml
+  - ../configs/FusionPCB.kibot.yaml
+  - ../configs/JLCPCB.kibot.yaml
+  - ../configs/P-Ban.kibot.yaml
+  - ../configs/PCBWay.kibot.yaml
+
+filters:
+ - name: 'exclude_any'
+   type: 'generic'
+   comment: 'Exclude logos, testpoints, fiducials and power'
+   exclude_any:
+     - column: Reference
+       regex: '^(G|#|TP|F).*'
+
+outputs:
+  - name: 'print_sch'
+    comment: "Print schematic (PDF)"
+    type: pdf_sch_print
+    dir: .
+
+  - name: 'print_front'
+    comment: "Print F.Cu+Dwgs.User"
+    type: pdf_pcb_print
+    dir: .
+    layers:
+      - layer: F.Cu
+      - layer: Dwgs.User
+
+  - name: 'print_bottom'
+    comment: "Print B.Cu+Dwgs.User"
+    type: pdf_pcb_print
+    dir: .
+    layers:
+      - layer: B.Cu
+      - layer: Dwgs.User
+
+  - name: 'print_gnd'
+    comment: "Print GND+Dwgs.User"
+    type: pdf_pcb_print
+    dir: .
+    layers:
+      - layer: GND
+      - layer: Dwgs.User
+
+  - name: 'print_power'
+    comment: "Print Power_+3,3V+Dwgs.User"
+    type: pdf_pcb_print
+    dir: .
+    layers:
+      - layer: Power_+3,3V
+      - layer: Dwgs.User
+
+  - name: 'print_s1'
+    comment: "Print Señal_1+Dwgs.User"
+    type: pdf_pcb_print
+    dir: .
+    layers:
+      - layer: Señal_1
+        suffix: S1_Cu
+      - layer: Dwgs.User
+
+  - name: 'print_s2'
+    comment: "Print Señal_2+Dwgs.User"
+    type: pdf_pcb_print
+    dir: .
+    layers:
+      - layer: Señal_2
+        suffix: S2_Cu
+      - layer: Dwgs.User
+
+  - name: 'interactive_bom'
+    comment: "Interactive Bill of Materials (HTML)"
+    type: ibom
+    dir: BoM
+    options:
+      blacklist: 'DNF*'
+
+  - name: 'bom_html'
+    comment: "Bill of Materials in HTML format"
+    type: bom
+    dir: BoM
+    options: &bom_options
+      columns:
+        - Row
+        - field: References
+          name: Referencias
+        - field: Part
+          name: Parte
+        - field: Value
+          name: Valor
+        - field: manf#
+          name: P/N
+        - field: manf
+          name: Fabricante
+        - field: digikey#
+          name: 'Cod. Digi-Key'
+        - Footprint
+        - field: Desc
+          name: Descripción
+        - 'Quantity Per PCB'
+      group_fields:  ['digikey#', 'Part']
+      normalize_values: true
+      normalize_locale: true
+      exclude_filter: 'exclude_any'
+      html:
+        logo: 'docs/qitas.png'
+        digikey_link: 'digikey#'
+        highlight_empty: false
+
+  - name: 'bom_xlsx'
+    comment: "Bill of Materials in XLSX format"
+    type: bom
+    dir: BoM
+    options:
+      <<: *bom_options
+      format: XLSX
+      xlsx:
+        logo: 'docs/qitas.png'
+        digikey_link: 'digikey#'
+        highlight_empty: false
+
+  - name: 'bom_csv'
+    comment: "Bill of Materials in CSV format"
+    type: bom
+    dir: BoM
+    options:
+      <<: *bom_options
+      format: CSV
+
+  - name: 'gerbers'
+    comment: "Gerbers for the board house"
+    type: gerber
+    dir: Gerbers
+    options:
+      # generic layer options
+      exclude_edge_layer: true
+      exclude_pads_from_silkscreen: false
+      use_aux_axis_as_origin: false
+      plot_sheet_reference: false
+      plot_footprint_refs: true
+      plot_footprint_values: true
+      force_plot_invisible_refs_vals: false
+      tent_vias: true
+
+      # gerber options
+      line_width: 0.1
+      subtract_mask_from_silk: false
+      use_protel_extensions: false
+      gerber_precision: 4.6
+      create_gerber_job_file: true
+      use_gerber_x2_attributes: true
+      use_gerber_net_attributes: true
+
+    layers:
+      - layer: F.Cu
+        suffix: F_Cu
+      - layer: B.Cu
+        suffix: B_Cu
+      - layer: GND
+        suffix: GND_Cu
+      - layer: Power_+3,3V
+        suffix: Power_Cu
+      - layer: Señal_1
+        suffix: S1_Cu
+      - layer: Señal_2
+        suffix: S2_Cu
+      - layer: F.Paste
+        suffix: F_Paste
+      - layer: B.Paste
+        suffix: B_Paste
+      - layer: F.SilkS
+        suffix: F_SilkS
+      - layer: B.SilkS
+        suffix: B_SilkS
+      - layer: F.Mask
+        suffix: F_Mask
+      - layer: B.Mask
+        suffix: B_Mask
+      - layer: Dwgs.User
+        suffix: Dwgs_User
+      - layer: Edge.Cuts
+        suffix: Edge_Cuts
+      - layer: F.Fab
+        suffix: F_Fab
+      - layer: B.Fab
+        suffix: B_Fab
+
+  - name: excellon_drill
+    comment: "Excellon drill files"
+    type: excellon
+    dir: Drill
+    options:
+      metric_units: false
+      pth_and_npth_single_file: false
+      use_aux_axis_as_origin: false
+      minimal_header: false
+      mirror_y_axis: false
+      report:
+        filename: 'template-drl.rpt'
+      map:
+        type: 'pdf'
+
+  - name: gerber_drills
+    comment: "Gerber drill files"
+    type: gerb_drill
+    dir: Drill
+    options:
+      use_aux_axis_as_origin: false
+
+  - name: 'position'
+    comment: "Pick and place file"
+    type: position
+    dir: Position
+    options:
+      format: ASCII   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: true
+      only_smd: true
+
+  - name: pcb_top_g
+    comment: "PCB render top green"
+    type: pcbdraw
+    dir: PCB/green
+    options:
+      format: jpg
+      show_components: none
+      dpi: 600
+
+  - name: pcb_bot_g
+    comment: "PCB render bottom green"
+    type: pcbdraw
+    dir: PCB/green
+    options:
+      format: jpg
+      bottom: True
+      show_components: none
+      dpi: 600
+
+  - name: pcb_top_b
+    comment: "PCB render top blue"
+    type: pcbdraw
+    dir: PCB/blue
+    options:
+      format: jpg
+      style: set-blue-enig
+      show_components: none
+      dpi: 600
+
+  - name: pcb_bot_b
+    comment: "PCB render bottom blue"
+    type: pcbdraw
+    dir: PCB/blue
+    options:
+      format: jpg
+      style: set-blue-enig
+      bottom: True
+      show_components: none
+      dpi: 600
+
+  - name: pcb_top_r
+    comment: "PCB render top red"
+    type: pcbdraw
+    dir: PCB/red
+    options:
+      format: jpg
+      style: set-red-enig
+      show_components: none
+      dpi: 600
+
+  - name: pcb_bot_r
+    comment: "PCB render bottom red"
+    type: pcbdraw
+    dir: PCB/red
+    options:
+      format: jpg
+      style: set-red-enig
+      bottom: True
+      show_components: none
+      dpi: 600
+
+  - name: step
+    comment: "Generate 3D model (STEP)"
+    type: step
+    dir: 3D
+    options:
+      metric_units: true
+      origin: 85,66.2
